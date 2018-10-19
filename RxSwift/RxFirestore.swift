@@ -11,6 +11,9 @@ struct FirestoreError {
 
 extension Reactive where Base: DocumentReference {
 
+    /**
+    Reads the document referred to by this DocumentReference
+     */
     func getDocument() -> Single<DocumentSnapshot> {
         return Single.create { observer in
             let disposable = Disposables.create { }
@@ -26,6 +29,10 @@ extension Reactive where Base: DocumentReference {
         }
     }
 
+    /**
+    Writes to the document referred to by this DocumentReference. If the document does not exist yet, it will be
+    created.
+     */
     func set(documentData: [String: Any]) -> Completable {
         return Completable.create { observer in
             let disposable = Disposables.create { }
@@ -41,6 +48,10 @@ extension Reactive where Base: DocumentReference {
         }
     }
 
+    /**
+    Writes to the document referred to by this DocumentReference. If the document does not exist yet, it will be
+    created. If you pass options, the provided data can be merged into the existing document.
+     */
     func set(documentData: [String: Any], options: SetOptions) -> Completable {
         return Completable.create { observer in
             let disposable = Disposables.create { }
@@ -56,6 +67,10 @@ extension Reactive where Base: DocumentReference {
         }
     }
 
+    /**
+    Updates fields in the document referred to by this DocumentReference. The update will fail if applied to a
+    document that does not exist.
+     */
     func update(documentData: [String: Any]) -> Completable {
         return Completable.create { observer in
             let disposable = Disposables.create { }
@@ -71,6 +86,9 @@ extension Reactive where Base: DocumentReference {
         }
     }
 
+    /**
+    Deletes the document referred to by this DocumentReference.
+     */
     func delete() -> Completable {
         return Completable.create { observer in
             let disposable = Disposables.create { }
@@ -86,6 +104,13 @@ extension Reactive where Base: DocumentReference {
         }
     }
 
+    /**
+    Attaches a listener for DocumentSnapshot events. When the Observable is disposed, the listener is automatically
+    removed and no further action is necessary.
+
+    NOTE: Although an onCompletion callback can be provided, it will never be called because the snapshot stream is
+    never-ending.
+     */
     func listen(with options: DocumentListenOptions? = nil) -> Observable<DocumentSnapshot> {
         return Observable.create { observer in
             var listener: ListenerRegistration?
@@ -105,6 +130,9 @@ extension Reactive where Base: DocumentReference {
 
 extension Reactive where Base: CollectionReference {
 
+    /**
+    Adds a new document to this collection with the specified data, assigning it a document ID automatically.
+     */
     func add(document: [String: Any]) -> Single<DocumentReference> {
         return Single.create { observer in
             let disposable = Disposables.create { }
@@ -152,6 +180,13 @@ extension Reactive where Base: CollectionReference {
 
 extension Reactive where Base: Query {
 
+    /**
+    Executes the query and returns the results as a QuerySnapshot. When the Observable is disposed, the listener is automatically
+    removed and no further action is necessary.
+
+    NOTE: Although an onCompletion callback can be provided, it will never be called because the snapshot stream is
+    never-ending.
+     */
     func getDocuments() -> Single<QuerySnapshot> {
         return Single.create { observer in
             let disposable = Disposables.create { }
@@ -167,6 +202,9 @@ extension Reactive where Base: Query {
         }
     }
 
+    /**
+    Attaches a listener for QuerySnapshot events.
+     */
     func listen(with options: QueryListenOptions? = nil) -> Observable<QuerySnapshot> {
         return Observable.create { observer in
             var listener: ListenerRegistration?
@@ -185,6 +223,10 @@ extension Reactive where Base: Query {
 }
 
 extension Reactive where Base: WriteBatch {
+
+    /**
+    Commits all of the writes in this write batch as a single atomic unit.
+     */
     func commit() -> Completable {
         return Completable.create { observer in
             let disposable = Disposables.create { }
@@ -202,6 +244,12 @@ extension Reactive where Base: WriteBatch {
 }
 
 extension Reactive where Base: Firestore {
+
+    /**
+    Executes the given lambda function and then attempts to commit the changes applied within the transaction. If any
+    document read within the transaction has changed, Cloud Firestore retries the lambda function. If it fails to
+    commit after 5 attempts, the transaction fails.
+     */
     func runTransaction(_ updateBlock: @escaping (Transaction, NSErrorPointer) -> Any?,
                         successCompletion: ((Any) -> Void)?,
                         errorCompletion: ((Error) -> Void)?) -> Single<Any> {
